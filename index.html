@@ -39,11 +39,18 @@
         <span>Position</span>
         <input id="pos"/>
 
-        <span>Strength</span>
+        <span>Weights</span>
         <input id="str"/>
+
+        <span>Steps</span>
+        <input type="range" min="1" max="150" value="20" class="slider" id="steps" oninput="updateBoxValues()">
+
+        <span>Extra Generation Parameters</span>
+        <textarea id="egp" style="height: 60px"></textarea>
+        <button id="copyToClipboard" onclick="copytoclipboard()">✂</button>
         <br/>
         <span>Background Reference</span>
-        <input id="bg-ref" type="file" onchange="updateBackground()"/>
+        <input id="bg-ref" type="file" oninput="updateBackground()"/>
       </div>
 
     </div>

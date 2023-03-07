@@ -70,7 +70,7 @@ function adjust_information(id) {
 
   document.getElementById(id + 'segment').innerHTML = `Divisions: ${s_h}:${s_v}`
   document.getElementById(id + 'position').innerHTML = `Position: ${p_h}:${p_v}`
-  document.getElementById(id + 'strength').innerHTML = `Strength: ${str}`
+  document.getElementById(id + 'strength').innerHTML = `Weight: ${str}`
 
   document.getElementById(`info-${id}`).innerHTML = `[${s_h}:${s_v}] [${p_h}:${p_v}] [${str}]`
 
@@ -81,6 +81,7 @@ function updateBoxValues() {
   let div = document.getElementById("div");
   let pos = document.getElementById("pos");
   let str = document.getElementById("str");
+  let steps = document.getElementById("steps");
   let _div = [];
   let _pos = [];
   let _str = [];
@@ -97,6 +98,10 @@ function updateBoxValues() {
   div.value = _div.join(", ");
   pos.value = _pos.join(", ");
   str.value = _str.join(", ");
+
+
+  // divisions=1:1,2:2,2:1 positions=0:0,0.4:0.4,1:0 weights=0.2,0.8,0.8 end at step=20
+  document.getElementById("egp").value = `divisions=${_div.join(",")} positions=${_pos.join(",")} weights=${_str.join(",")} end at step=${steps.value}`
 }
 
 function add_selector_box() {
@@ -176,4 +181,15 @@ async function updateBackground() {
   let data = await toBase64(bgref.files[0]);
   console.log(data);
   document.getElementById("bb").style.backgroundImage = `url(${data})`;
+}
+
+function copytoclipboard() {
+  let egpText = document.getElementById("egp").value;
+  console.log("Copying", egpText);
+  navigator.clipboard.writeText(egpText).then(function() {
+    document.getElementById("copyToClipboard").innerHTML = "Copied!";
+    setTimeout(() => {
+      document.getElementById("copyToClipboard").innerHTML = "✂";
+    }, 3000)
+  });
 }
