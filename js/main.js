@@ -48,8 +48,8 @@ function get_box_info(id) {
   let fixed_top = parseInt(selector_box.style.top.replace("px", ""));
   fixed_top += selector_boxes.indexOf(id) * 250;
   return [
-    fixed_top,
-    parseInt(selector_box.style.left.replace("px", "")),
+    selector_box.getAttribute('data-x') || 0,
+    selector_box.getAttribute('data-y') || 0,
     parseInt(selector_box.style.height.replace("px", "")),
     parseInt(selector_box.style.width.replace("px", "")),
     parseFloat(selector_box.style.opacity)
@@ -112,36 +112,16 @@ function add_selector_box() {
   selector_box.style.width = `${width / 2}px`;
 
   selector_box.style.background = getColor();
-  selector_box.style.top = `-${selector_boxes.length * 250}px`;
-  selector_box.style.left = `0px`;
+  selector_box.style.top = `${bb.getBoundingClientRect().top}px`;
+  selector_box.style.left = `${bb.getBoundingClientRect().left}px`;
   selector_box.style.opacity = "0.5";
 
   selector_box.className += " selector-box";
-  selector_box.draggable = true;
 
   selector_box.innerHTML = `
         <span id="info-${selector_box.id}" class="info"></span>
     `
 
-  let initial_drag_x = 0;
-  let initial_drag_y = 0;
-  function get_box_coords() {
-    return [
-      parseInt(selector_box.style.top.replace("px", "")),
-      parseInt(selector_box.style.left.replace("px", ""))
-    ]
-  }
-
-  selector_box.addEventListener('dragstart', (e) => {
-    initial_drag_x = e.x;
-    initial_drag_y = e.y;
-  });
-  selector_box.addEventListener('dragend', (e) => {
-    let [box_x, box_y] = get_box_coords();
-    selector_box.style.top = `${box_x - initial_drag_y + e.y}px`;
-    selector_box.style.left = `${box_y - initial_drag_x + e.x}px`;
-    adjust_information(selector_box.id);
-  })
   selector_box.addEventListener('wheel', (e) => {
     let current_opacity = parseFloat(selector_box.style.opacity);
     let delta  = e.deltaY;
@@ -157,9 +137,52 @@ function add_selector_box() {
     adjust_information(selector_box.id)
   })
 
-  new ResizeObserver((e) => {
+
+  function dragMoveListener (event) {
+    var target = event.target,
+      // keep the dragged position in the data-x/data-y attributes
+      x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+      y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+    // translate the element
+    target.style.webkitTransform =
+      target.style.transform =
+        'translate(' + x + 'px, ' + y + 'px)';
+
+    // update the posiion attributes
+    target.setAttribute('data-x', x);
+    target.setAttribute('data-y', y);
     adjust_information(selector_box.id);
-  }).observe(selector_box)
+  }
+
+
+  interact(`#${selector_box.id}`)
+    .draggable({
+      onmove: dragMoveListener
+    })
+    .resizable({
+      edges: { left: true, right: true, bottom: true, top: true }
+    })
+    .on('resizemove', function (event) {
+      var target = event.target;
+        x = (parseFloat(target.getAttribute('data-x')) || 0),
+        y = (parseFloat(target.getAttribute('data-y')) || 0);
+
+      // update the element's style
+      target.style.width  = event.rect.width + 'px';
+      target.style.height = event.rect.height + 'px';
+
+      // translate when resizing from top or left edges
+      x += event.deltaRect.left;
+      y += event.deltaRect.top;
+
+      target.style.webkitTransform = target.style.transform =
+        'translate(' + x + 'px,' + y + 'px)';
+
+      target.setAttribute('data-x', x);
+      target.setAttribute('data-y', y);
+      adjust_information(selector_box.id);
+    });
 
   bb.appendChild(selector_box);
   add_settings(selector_box.id);
