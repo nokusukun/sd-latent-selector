@@ -68,11 +68,11 @@ function adjust_information(id) {
   let p_h = Math.trunc(((x / height) * s_h) * 100) / 100;
   let p_v = Math.trunc(((y / width) * s_v) * 100) / 100;
 
-  document.getElementById(id + 'segment').innerHTML = `Divisions: ${s_h}:${s_v}`
+  document.getElementById(id + 'segment').innerHTML = `${id}<br/>Divisions: ${s_h}:${s_v}`
   document.getElementById(id + 'position').innerHTML = `Position: ${p_h}:${p_v}`
   document.getElementById(id + 'strength').innerHTML = `Weight: ${str}`
 
-  document.getElementById(`info-${id}`).innerHTML = `[${s_h}:${s_v}] [${p_h}:${p_v}] [${str}]`
+  document.getElementById(`info-${id}`).innerHTML = `${id} [${s_h}:${s_v}] [${p_h}:${p_v}] [${str}]`
 
   updateBoxValues()
 }
