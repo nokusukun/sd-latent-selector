@@ -65,8 +65,8 @@ function adjust_information(id) {
   console.log("Box Changed", [x, y, w, h]);
   let s_h = Math.trunc((width / w) * 100) / 100;
   let s_v = Math.trunc((height / h) * 100) / 100;
-  let p_h = Math.trunc(((x / height) * s_h) * 100) / 100;
-  let p_v = Math.trunc(((y / width) * s_v) * 100) / 100;
+  let p_h = Math.trunc(((y / width) * s_h) * 100) / 100;
+  let p_v = Math.trunc(((x / height) * s_v) * 100) / 100;
 
   document.getElementById(id + 'segment').innerHTML = `${id}<br/>Divisions: ${s_h}:${s_v}`
   document.getElementById(id + 'position').innerHTML = `Position: ${p_h}:${p_v}`
@@ -85,20 +85,21 @@ function updateBoxValues() {
   let _div = [];
   let _pos = [];
   let _str = [];
+
   selector_boxes.forEach(id => {
     let [x, y, w, h, str] = get_box_info(id);
     let s_h = Math.trunc((width / w) * 100) / 100;
     let s_v = Math.trunc((height / h) * 100) / 100;
-    let p_h = Math.trunc(((x / height) * s_h) * 100) / 100;
-    let p_v = Math.trunc(((y / width) * s_v) * 100) / 100;
+    let p_h = Math.trunc(((y / width) * s_h) * 100) / 100;
+    let p_v = Math.trunc(((x / height) * s_v) * 100) / 100;
     _div.push(`${s_h}:${s_v}`);
     _pos.push(`${p_h}:${p_v}`);
     _str.push(str);
-  })
+  });
+
   div.value = _div.join(", ");
   pos.value = _pos.join(", ");
   str.value = _str.join(", ");
-
 
   // divisions=1:1,2:2,2:1 positions=0:0,0.4:0.4,1:0 weights=0.2,0.8,0.8 end at step=20
   document.getElementById("egp").value = `divisions=${_div.join(",")} positions=${_pos.join(",")} weights=${_str.join(",")} end at step=${steps.value}`
