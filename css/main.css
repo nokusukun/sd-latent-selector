@@ -265,15 +265,15 @@ textarea {
 .app {
   display: flex;
   flex-direction: row;
-  padding: 1em;
+  padding: 10px 1em 1em 1em;
   gap: 0.8em;
 }
 
 .bounding-box {
-  height: 500px;
-  width: 500px;
+  height: 502px;
+  width: 502px;
   background: #eaeaea;
-  border: 1px solid rgba(0, 0, 0, 0);
+  border: 0 solid rgba(0, 0, 0, 0);
   background-size: 500px 500px;
 
 }

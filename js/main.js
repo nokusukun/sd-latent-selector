@@ -3,9 +3,32 @@ console.log("Loading")
 var width = 500;
 var height = 500;
 
+var boxResizeSnapValue = Number(localStorage.getItem('boxResizeSnapValue')) || 10;
+var boxDragSnapValue = Number(localStorage.getItem('boxDragSnapValue'))|| 10;
+
+function setNewResizeSnapValue () {
+  var snapValue = prompt("Enter new resize snap value");
+  try {
+    localStorage.setItem('boxResizeSnapValue', Number(snapValue).toString())
+    boxResizeSnapValue = Number(snapValue)
+  } catch (e) {
+    alert(`Invalid value for ${snapValue}.`)
+  }
+}
+
+function setNewDragSnapValue () {
+  var snapValue = prompt("Enter new resize snap value");
+  try {
+    localStorage.setItem('boxDragSnapValue', Number(snapValue).toString())
+    boxDragSnapValue = Number(snapValue)
+  } catch (e) {
+    alert(`Invalid value for ${snapValue}.`)
+  }
+}
+
 var selector_boxes = []
 
-function getColor(){
+function getColor() {
   return "hsl(" + 360 * Math.random() + ',' +
     (25 + 70 * Math.random()) + '%,' +
     (85 + 10 * Math.random()) + '%)'
@@ -57,7 +80,7 @@ function get_box_info(id) {
 }
 
 function adjust_information(id) {
-  if(document.getElementById(id) === null) {
+  if (document.getElementById(id) === null) {
     return
   }
 
@@ -125,7 +148,7 @@ function add_selector_box() {
 
   selector_box.addEventListener('wheel', (e) => {
     let current_opacity = parseFloat(selector_box.style.opacity);
-    let delta  = e.deltaY;
+    let delta = e.deltaY;
     if (delta > 0) {
       console.log("Mouse Scroll Down")
       current_opacity -= 0.05
@@ -139,7 +162,7 @@ function add_selector_box() {
   })
 
 
-  function dragMoveListener (event) {
+  function dragMoveListener(event) {
     var target = event.target,
       // keep the dragged position in the data-x/data-y attributes
       x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
@@ -159,19 +182,34 @@ function add_selector_box() {
 
   interact(`#${selector_box.id}`)
     .draggable({
-      onmove: dragMoveListener
+      onmove: dragMoveListener,
+      modifiers: [
+        interact.modifiers.snap({
+          targets: [
+            interact.snappers.grid({ x: boxDragSnapValue, y: boxDragSnapValue })
+          ],
+          range: Infinity,
+          relativePoints: [ { x: 0, y: 0 } ]
+        }),
+        interact.modifiers.restrict({
+          restriction: 'parent',
+          elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
+          endOnly: true
+        })
+      ]
     })
     .resizable({
-      edges: { left: true, right: true, bottom: true, top: true }
+      edges: {left: true, right: true, bottom: true, top: true}
     })
     .on('resizemove', function (event) {
       var target = event.target;
-        x = (parseFloat(target.getAttribute('data-x')) || 0),
-        y = (parseFloat(target.getAttribute('data-y')) || 0);
+      let x = (parseFloat(target.getAttribute('data-x')) || 0)
+      let y = (parseFloat(target.getAttribute('data-y')) || 0);
+
 
       // update the element's style
-      target.style.width  = event.rect.width + 'px';
-      target.style.height = event.rect.height + 'px';
+      target.style.width = (event.rect.width / boxResizeSnapValue).toFixed() * boxResizeSnapValue + 'px';
+      target.style.height = (event.rect.height / boxResizeSnapValue).toFixed() * boxResizeSnapValue + 'px';
 
       // translate when resizing from top or left edges
       x += event.deltaRect.left;
@@ -179,6 +217,8 @@ function add_selector_box() {
 
       target.style.webkitTransform = target.style.transform =
         'translate(' + x + 'px,' + y + 'px)';
+
+      console.log("Scaling", target.style.webkitTransform)
 
       target.setAttribute('data-x', x);
       target.setAttribute('data-y', y);
@@ -210,7 +250,7 @@ async function updateBackground() {
 function copytoclipboard() {
   let egpText = document.getElementById("egp").value;
   console.log("Copying", egpText);
-  navigator.clipboard.writeText(egpText).then(function() {
+  navigator.clipboard.writeText(egpText).then(function () {
     document.getElementById("copyToClipboard").innerHTML = "Copied!";
     setTimeout(() => {
       document.getElementById("copyToClipboard").innerHTML = "✂";

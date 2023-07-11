@@ -25,6 +25,7 @@
   <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
   <meta name="theme-color" content="#fafafa">
   <script src="js/main.js"></script>
+  <script src="js/plugins.js"></script>
 </head>
 
 <body>
@@ -52,6 +53,12 @@
         <br/>
         <span>Background Reference</span>
         <input id="bg-ref" type="file" oninput="updateBackground()"/>
+        <br/>
+        <span>Configure</span>
+        <div class="v-array">
+          <button onclick="setNewDragSnapValue()">Drag Snap</button>
+          <button onclick="setNewResizeSnapValue()">Resize Snap</button>
+        </div>
       </div>
 
     </div>
